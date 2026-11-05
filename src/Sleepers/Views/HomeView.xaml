@@ -1,0 +1,81 @@
+<UserControl x:Class="Sleepers.Views.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,28">
+            <TextBlock Style="{StaticResource H1}" Text="Home"/>
+            <TextBlock Style="{StaticResource Dim}" Margin="0,4,0,18"
+                       Text="Drop media here, choose a preset, then start the queue."/>
+
+            <Border Style="{StaticResource CardStyle}" AllowDrop="True" Drop="Drop_Files" MinHeight="170" Background="#16161C">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="Drop videos or audio files here" FontSize="20" HorizontalAlignment="Center"
+                               Foreground="{StaticResource TextBrush}"/>
+                    <TextBlock x:Name="PresetLabel" Style="{StaticResource Dim}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                    <Button Content="Browse files…" Style="{StaticResource Primary}" HorizontalAlignment="Center"
+                            Margin="0,16,0,0" Click="Browse_Click"/>
+                </StackPanel>
+            </Border>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource H2}" Text="Quick presets"/>
+                        <WrapPanel x:Name="PresetPanel"/>
+                        <TextBlock x:Name="PresetDesc" Style="{StaticResource Dim}" FontSize="12" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource H2}" Text="Hardware"/>
+                        <TextBlock x:Name="HwText" Style="{StaticResource Dim}" FontSize="12"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="4" Style="{StaticResource CardStyle}" x:Name="ActivityCard">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource H2}" Text="Activity"/>
+                        <ProgressBar Height="6" Maximum="100" Value="{Binding OverallProgress, Mode=OneWay}" Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding OverallText}" Style="{StaticResource Dim}"/>
+                        <TextBlock Text="{Binding QueuedCount, StringFormat='Waiting: {0}'}" Style="{StaticResource Dim}" Margin="0,8,0,0"/>
+                        <TextBlock Text="{Binding RunningCount, StringFormat='Encoding: {0}'}" Style="{StaticResource Dim}"/>
+                        <TextBlock Text="{Binding DoneCount, StringFormat='Completed: {0}'}" Style="{StaticResource Dim}"/>
+                        <TextBlock Text="{Binding FailedCount, StringFormat='Failed: {0}'}" Style="{StaticResource Dim}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource H2}" Text="Recent conversions"/>
+                    <TextBlock x:Name="NoRecent" Style="{StaticResource Dim}" Text="Nothing yet. Finished conversions will appear here."/>
+                    <ItemsControl x:Name="RecentList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding SourceName}" TextTrimming="CharacterEllipsis" Foreground="{StaticResource TextBrush}"/>
+                                    <TextBlock Grid.Column="1" Style="{StaticResource Dim}" Margin="16,0,0,0">
+                                        <Run Text="{Binding ResultText, Mode=OneWay}"/> · <Run Text="{Binding ReductionText, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

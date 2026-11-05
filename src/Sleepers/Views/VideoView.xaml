@@ -1,0 +1,115 @@
+<UserControl x:Class="Sleepers.Views.VideoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="32,28">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="290"/>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Style="{StaticResource H1}" Text="Video Compressor"/>
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,14,0,10">
+                <Button Content="Add videos…" Style="{StaticResource Primary}" Click="Add_Click"/>
+                <Button Content="Remove" Margin="8,0,0,0" Click="Remove_Click"/>
+            </StackPanel>
+            <Border Style="{StaticResource CardStyle}" Padding="4" AllowDrop="True" Drop="Drop_Files" Margin="0">
+                <ListBox x:Name="JobList" Background="Transparent" BorderThickness="0" SelectionChanged="JobList_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="4,4">
+                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock Style="{StaticResource Dim}" FontSize="11.5">
+                                    <Run Text="{Binding StatusText, Mode=OneWay}"/> · <Run Text="{Binding SettingsSummary, Mode=OneWay}"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+        </DockPanel>
+
+        <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock x:Name="EmptyHint" Style="{StaticResource Dim}" Margin="0,60,0,0" FontSize="15"
+                           Text="Add or drop a video to configure it. Analysis and recommendations appear here."/>
+                <StackPanel x:Name="EditorPanel" Visibility="Collapsed">
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource H2}" Text="Source analysis"/>
+                            <TextBlock x:Name="InfoText" Style="{StaticResource Dim}"/>
+                            <TextBlock x:Name="NotesText" Margin="0,10,0,0" TextWrapping="Wrap" Foreground="{StaticResource Accent}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,10">
+                                <Button DockPanel.Dock="Right" Content="Apply settings to all queued videos" Click="ApplyAll_Click"/>
+                                <TextBlock Style="{StaticResource H2}" Text="Settings" Margin="0"/>
+                            </DockPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <ComboBox x:Name="PresetBox" Width="200" SelectionChanged="Preset_Changed"/>
+                                <TextBlock x:Name="PresetDesc" Style="{StaticResource Dim}" Margin="14,0,0,0" VerticalAlignment="Center" Width="420"/>
+                            </StackPanel>
+
+                            <StackPanel x:Name="Editor">
+                                <WrapPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Format"/>
+                                        <ComboBox x:Name="ContainerBox" SelectedItem="{Binding Container}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Video codec"/>
+                                        <ComboBox x:Name="CodecBox" SelectedItem="{Binding VideoCodec}" SelectionChanged="Codec_Changed"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Encoder (hardware / software)"/>
+                                        <ComboBox x:Name="BackendBox" SelectedItem="{Binding Backend}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Speed vs. compression"/>
+                                        <ComboBox x:Name="SpeedBox" SelectedItem="{Binding Speed}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Rate control"/>
+                                        <ComboBox x:Name="RateBox" SelectedItem="{Binding RateControl}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Quality (CRF/CQ — lower = better, larger)"/>
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Width="26" TextAlignment="Right" Text="{Binding Value, ElementName=QualitySlider, StringFormat=0}"/>
+                                            <Slider x:Name="QualitySlider" Minimum="0" Maximum="63" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding Quality}"/>
+                                        </DockPanel></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Video bitrate (kbps)"/>
+                                        <TextBox Text="{Binding VideoBitrateKbps, UpdateSourceTrigger=LostFocus}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Target file size (MB)"/>
+                                        <TextBox Text="{Binding TargetSizeMb, UpdateSourceTrigger=LostFocus}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Max resolution"/>
+                                        <ComboBox x:Name="HeightBox" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding MaxHeight}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Max frame rate"/>
+                                        <ComboBox x:Name="FpsBox" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding MaxFps}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Audio codec"/>
+                                        <ComboBox x:Name="AudioCodecBox" SelectedItem="{Binding AudioCodec}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Audio bitrate"/>
+                                        <ComboBox x:Name="AudioBitrateBox" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding AudioBitrateKbps}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Audio track"/>
+                                        <ComboBox x:Name="TrackBox" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding AudioTrack}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Subtitles"/>
+                                        <ComboBox x:Name="SubsBox" SelectedItem="{Binding Subtitles}"/></StackPanel>
+                                </WrapPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox Content="Two-pass (bitrate / target size, software encoders)" IsChecked="{Binding TwoPass}" Margin="0,0,24,0"/>
+                                    <CheckBox Content="Keep metadata and chapters" IsChecked="{Binding KeepMetadata}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <TextBlock x:Name="ErrorText" Margin="0,12,0,0" TextWrapping="Wrap" Foreground="#FF7A7A"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource H2}" Text="Hardware vs. software encoding"/>
+                            <TextBlock Style="{StaticResource Dim}" FontSize="12.5" Text="Hardware encoders (NVIDIA NVENC, AMD AMF, Intel Quick Sync) are much faster and leave the CPU free, but at the same visual quality they usually produce larger files than software encoders (x264, x265, SVT-AV1). Software encoding is slower and gives the best compression efficiency. Which codecs a GPU supports depends on its generation; SLEEPERS tests each encoder on your machine and falls back to software when one does not work. “Automatic” uses hardware only for Maximum Speed."/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                    <Button Content="Start queue" Style="{StaticResource Primary}" Click="Start_Click"/>
+                    <Button Content="Open Batch Queue" Margin="8,0,0,0" Click="OpenQueue_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

@@ -1,0 +1,85 @@
+<UserControl x:Class="Sleepers.Views.AudioView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="32,28">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="290"/>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Style="{StaticResource H1}" Text="Audio Converter"/>
+            <StackPanel DockPanel.Dock="Top" Margin="0,14,0,10">
+                <Button Content="Extract Audio to MP3 (one click)" Style="{StaticResource Primary}" HorizontalAlignment="Stretch"
+                        Click="OneClick_Click"/>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Button Content="Add files…" Click="Add_Click"/>
+                    <Button Content="Remove" Margin="8,0,0,0" Click="Remove_Click"/>
+                </StackPanel>
+            </StackPanel>
+            <Border Style="{StaticResource CardStyle}" Padding="4" AllowDrop="True" Drop="Drop_Files" Margin="0">
+                <ListBox x:Name="JobList" Background="Transparent" BorderThickness="0" SelectionChanged="JobList_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="4,4">
+                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock Style="{StaticResource Dim}" FontSize="11.5">
+                                    <Run Text="{Binding StatusText, Mode=OneWay}"/> · <Run Text="{Binding SettingsSummary, Mode=OneWay}"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+        </DockPanel>
+
+        <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock x:Name="EmptyHint" Style="{StaticResource Dim}" Margin="0,60,0,0" FontSize="15"
+                           Text="Add audio files, or videos to extract their sound. Drag and drop works too."/>
+                <StackPanel x:Name="EditorPanel" Visibility="Collapsed">
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource H2}" Text="Source"/>
+                            <TextBlock x:Name="InfoText" Style="{StaticResource Dim}"/>
+                            <TextBlock x:Name="NotesText" Margin="0,10,0,0" TextWrapping="Wrap" Foreground="{StaticResource Accent}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,10">
+                                <Button DockPanel.Dock="Right" Content="Apply to all queued audio jobs" Click="ApplyAll_Click"/>
+                                <TextBlock Style="{StaticResource H2}" Text="Output" Margin="0"/>
+                            </DockPanel>
+                            <ComboBox x:Name="PresetBox" Width="260" HorizontalAlignment="Left" Margin="0,0,0,12" SelectionChanged="Preset_Changed"/>
+                            <StackPanel x:Name="Editor">
+                                <WrapPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Format / codec"/>
+                                        <ComboBox x:Name="FormatBox" SelectedItem="{Binding AudioFormat}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Bitrate (lossy formats)"/>
+                                        <ComboBox x:Name="BitrateBox" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding AudioBitrateKbps}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Sample rate"/>
+                                        <ComboBox x:Name="RateBox" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding SampleRate}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Channels"/>
+                                        <ComboBox x:Name="ChannelsBox" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding Channels}"/></StackPanel>
+                                    <StackPanel Style="{StaticResource Field}"><TextBlock Style="{StaticResource FieldLabel}" Text="Audio track"/>
+                                        <ComboBox x:Name="TrackBox" DisplayMemberPath="Label" SelectedValuePath="Value" SelectedValue="{Binding AudioTrack}"/></StackPanel>
+                                </WrapPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox Content="Normalize volume (EBU R128, −16 LUFS)" IsChecked="{Binding Normalize}" Margin="0,0,24,0"/>
+                                    <CheckBox Content="Keep metadata (tags)" IsChecked="{Binding KeepMetadata}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <TextBlock x:Name="ErrorText" Margin="0,12,0,0" TextWrapping="Wrap" Foreground="#FF7A7A"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                    <Button Content="Start queue" Style="{StaticResource Primary}" Click="Start_Click"/>
+                    <Button Content="Open Batch Queue" Margin="8,0,0,0" Click="OpenQueue_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
