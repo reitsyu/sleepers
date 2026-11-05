@@ -1,0 +1,20 @@
+name: Build SLEEPERS
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Build portable package (downloads GPL FFmpeg)
+        run: ./build.ps1 -FetchFfmpeg
+        shell: pwsh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SLEEPERS-portable-win-x64
+          path: dist/SLEEPERS-portable-win-x64.zip
